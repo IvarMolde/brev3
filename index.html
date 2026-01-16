@@ -1,0 +1,1681 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Norske Brev - Lære Norsk A2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background: linear-gradient(135deg, #e8f4f8 0%, #d4e8f0 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+        }
+
+        h1 {
+            font-family: 'Caveat', cursive;
+            font-size: 3.5rem;
+            color: #0066cc;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #666;
+        }
+
+        /* Postkasse Design */
+        .mailbox-container {
+            background: linear-gradient(to bottom, #8b4513 0%, #654321 100%);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            margin-bottom: 40px;
+        }
+
+        .mailbox-top {
+            background: #654321;
+            height: 60px;
+            border-radius: 10px 10px 0 0;
+            position: relative;
+            box-shadow: inset 0 -5px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .mailbox-slot {
+            width: 300px;
+            height: 15px;
+            background: #333;
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .mailbox-body {
+            background: #8b4513;
+            padding: 30px;
+            border-radius: 0 0 20px 20px;
+            min-height: 400px;
+            position: relative;
+        }
+
+        .envelopes-in-mailbox {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .envelope-in-box {
+            position: relative;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            transform-origin: center bottom;
+        }
+
+        .envelope-in-box:hover {
+            transform: translateY(-20px) scale(1.1);
+            z-index: 10;
+        }
+
+        .envelope-in-box.picked-up {
+            animation: pickUp 0.6s ease-out forwards;
+        }
+
+        @keyframes pickUp {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(-100px) scale(1.2) rotate(-5deg);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-150px) scale(0.8) rotate(-10deg);
+                opacity: 0;
+            }
+        }
+
+        .envelope-paper {
+            background: #fff8e1;
+            width: 180px;
+            height: 120px;
+            margin: 0 auto;
+            border-radius: 5px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transform: perspective(500px) rotateX(5deg);
+            transition: all 0.3s ease;
+        }
+
+        .envelope-in-box:hover .envelope-paper {
+            transform: perspective(500px) rotateX(0deg) translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: #fff8e1;
+            border-radius: 5px 5px 0 0;
+            clip-path: polygon(0 0, 50% 100%, 100% 0);
+            z-index: 1;
+        }
+
+        .envelope-seal {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 30px;
+            background: #c62828;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .envelope-label {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Caveat', cursive;
+            font-size: 1.2rem;
+            color: #0066cc;
+            font-weight: 700;
+            z-index: 2;
+        }
+
+        .completion-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 30px;
+            height: 30px;
+            background: #28a745;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .envelope-in-box.completed .completion-badge {
+            opacity: 1;
+        }
+
+        /* Writing Hand Animation */
+        .writing-hand-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .writing-hand-container.active {
+            display: flex;
+        }
+
+        .writing-scene {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+        }
+
+        .writing-hand {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+
+        .hand-svg {
+            width: 100%;
+            height: 100%;
+            animation: write 2s ease-in-out infinite;
+        }
+
+        @keyframes write {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            25% {
+                transform: translateY(-5px) rotate(2deg);
+            }
+            50% {
+                transform: translateY(-10px) rotate(-2deg);
+            }
+            75% {
+                transform: translateY(-5px) rotate(1deg);
+            }
+        }
+
+        .writing-text {
+            font-family: 'Caveat', cursive;
+            font-size: 1.5rem;
+            color: #333;
+            margin-top: 20px;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            max-width: 900px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideUp 0.3s ease;
+            padding: 30px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #f0f0f0;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #666;
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+
+        .close-btn:hover {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .letter-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .letter-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #444;
+            margin-bottom: 30px;
+            text-align: left;
+            min-height: 200px;
+            white-space: pre-wrap;
+        }
+
+        .letter-text.typing {
+            border-right: 2px solid #0066cc;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { border-color: #0066cc; }
+            51%, 100% { border-color: transparent; }
+        }
+
+        .btn {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Lato', sans-serif;
+            font-weight: 700;
+        }
+
+        .btn:hover {
+            background: #0052a3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 102, 204, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-center {
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* Quiz Styles */
+        .quiz-container {
+            display: none;
+        }
+
+        .quiz-container.active {
+            display: block;
+        }
+
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .question-counter {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+
+        .answers-container {
+            margin-bottom: 30px;
+        }
+
+        /* True/False Buttons */
+        .true-false-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .true-false-btn {
+            flex: 1;
+            max-width: 200px;
+            padding: 20px;
+            font-size: 1.2rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .true-false-btn.true {
+            background: #28a745;
+        }
+
+        .true-false-btn.false {
+            background: #dc3545;
+        }
+
+        .true-false-btn:hover {
+            transform: translateY(-5px) scale(1.08);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .true-false-btn.true:hover {
+            background: #218838;
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.5);
+        }
+
+        .true-false-btn.false:hover {
+            background: #c82333;
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.5);
+        }
+
+        .true-false-btn.selected {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .true-false-btn::before {
+            content: attr(data-hover-text);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-10px);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .true-false-btn:hover::before {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-5px);
+        }
+
+        .true-false-btn::after {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-2px);
+            border: 6px solid transparent;
+            border-top-color: rgba(0, 0, 0, 0.9);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .true-false-btn:hover::after {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Multiple Choice */
+        .answer-option {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1.1rem;
+        }
+
+        .answer-option:hover {
+            border-color: #0066cc;
+            background: #f0f7ff;
+        }
+
+        .answer-option.selected {
+            border-color: #0066cc;
+            background: #e6f2ff;
+        }
+
+        .answer-option.correct {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .answer-option.incorrect {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        /* Synonym Selection */
+        .synonym-question {
+            margin-bottom: 20px;
+        }
+
+        .word-to-match {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #0066cc;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f0f7ff;
+            border-radius: 5px;
+        }
+
+        .synonym-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .synonym-word {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1.1rem;
+        }
+
+        .synonym-word:hover {
+            border-color: #0066cc;
+            background: #f0f7ff;
+            transform: translateY(-2px);
+        }
+
+        .synonym-word.selected {
+            border-color: #0066cc;
+            background: #e6f2ff;
+            transform: scale(1.05);
+        }
+
+        .synonym-word.correct {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .synonym-word.incorrect {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        /* Word Order (Drag and Drop) */
+        .word-order-container {
+            margin-bottom: 30px;
+        }
+
+        .word-order-instruction {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .word-bank {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+            min-height: 80px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .word-item {
+            background: white;
+            border: 2px solid #0066cc;
+            border-radius: 8px;
+            padding: 12px 18px;
+            cursor: move;
+            font-size: 1.1rem;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .word-item:hover {
+            background: #e6f2ff;
+            transform: scale(1.05);
+        }
+
+        .word-item.dragging {
+            opacity: 0.5;
+        }
+
+        .word-item.placed {
+            background: #d4edda;
+            border-color: #28a745;
+            cursor: default;
+        }
+
+        .sentence-slot {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            min-height: 60px;
+            padding: 15px;
+            background: #fff;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .sentence-slot.drag-over {
+            border-color: #0066cc;
+            background: #f0f7ff;
+        }
+
+        .word-item.in-sentence {
+            background: #fff3cd;
+            border-color: #ffc107;
+        }
+
+        /* Synonym in Text */
+        .text-with-highlights {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #444;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .highlight-word {
+            display: inline-block;
+            padding: 2px 8px;
+            margin: 0 2px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: transparent;
+            border: 2px solid transparent;
+        }
+
+        .highlight-word:hover {
+            background: #fff3cd;
+            border-color: #ffc107;
+        }
+
+        .highlight-word.selected {
+            background: #e6f2ff;
+            border-color: #0066cc;
+        }
+
+        .highlight-word.correct {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+
+        .highlight-word.incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+
+        .target-word {
+            font-weight: 700;
+            color: #0066cc;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f0f7ff;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .feedback {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.correct {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+        }
+
+        .feedback.incorrect {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+        }
+
+        .feedback-text {
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .explanation {
+            font-size: 0.95rem;
+            margin-top: 5px;
+        }
+
+        .quiz-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        /* Completion Summary */
+        .completion-summary {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .score-display {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #0066cc;
+            margin: 20px 0;
+        }
+
+        .score-message {
+            font-size: 1.3rem;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .encouragement {
+            font-size: 1.1rem;
+            color: #28a745;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #0066cc;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .mailbox-container {
+                padding: 20px;
+            }
+
+            .envelopes-in-mailbox {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .envelope-paper {
+                width: 150px;
+                height: 100px;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+            }
+
+            .letter-image {
+                height: 200px;
+            }
+
+            .true-false-buttons {
+                flex-direction: column;
+            }
+
+            .true-false-btn {
+                max-width: 100%;
+            }
+
+            .synonym-options {
+                flex-direction: column;
+            }
+
+            .word-bank {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Norske Brev</h1>
+            <p class="subtitle">Lær norsk gjennom interaktive brev</p>
+        </header>
+
+        <div class="mailbox-container">
+            <div class="mailbox-top">
+                <div class="mailbox-slot"></div>
+            </div>
+            <div class="mailbox-body">
+                <div class="envelopes-in-mailbox" id="envelopesInMailbox">
+                    <!-- Envelopes will be generated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Writing Hand Animation -->
+    <div class="writing-hand-container" id="writingHandContainer">
+        <div class="writing-scene">
+            <div class="writing-hand">
+                <svg class="hand-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M30 20 L30 60 L25 65 L20 60 L20 25 Q20 15 30 15 L50 15 Q60 15 60 25 L60 50 L55 55 L50 50 L50 30 Q50 25 45 25 L35 25 Q30 25 30 30 Z" 
+                          fill="#fdbcb4" stroke="#333" stroke-width="1"/>
+                    <path d="M35 20 L35 25 M40 20 L40 25 M45 20 L45 25" 
+                          stroke="#333" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M25 65 L30 70 L35 65" 
+                          stroke="#333" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M50 50 L70 30 L75 35 L55 55 Z" 
+                          fill="#fff" stroke="#333" stroke-width="1"/>
+                    <path d="M70 30 L80 20 L85 25 L75 35 Z" 
+                          fill="#fff" stroke="#333" stroke-width="1"/>
+                </svg>
+            </div>
+            <div class="writing-text" id="writingText">Skriver brevet...</div>
+        </div>
+    </div>
+
+    <!-- Letter Reading Modal -->
+    <div class="modal-overlay" id="letterModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeLetterModal()">×</button>
+            <img class="letter-image" id="letterImage" src="" alt="Reisebilde">
+            <div class="letter-text" id="letterText"></div>
+            <button class="btn btn-center" onclick="startQuiz()">Gå til oppgaver</button>
+        </div>
+    </div>
+
+    <!-- Quiz Container -->
+    <div class="modal-overlay active" id="quizModal" style="display: none;">
+        <div class="modal-content">
+            <button class="close-btn" onclick="returnToMenu()">×</button>
+            <div class="quiz-container active" id="quizContainer">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="quiz-header">
+                    <div class="question-counter" id="questionCounter"></div>
+                    <div class="question-text" id="questionText"></div>
+                </div>
+                <div id="questionContent"></div>
+                <div class="feedback" id="feedback"></div>
+                <div class="quiz-actions" id="quizActions">
+                    <button class="btn" id="submitBtn" onclick="submitAnswer()">Svar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Completion Summary Modal -->
+    <div class="modal-overlay" id="completionModal">
+        <div class="modal-content">
+            <div class="completion-summary">
+                <h2 style="font-family: 'Caveat', cursive; font-size: 2.5rem; color: #0066cc; margin-bottom: 20px;">Bra gjort!</h2>
+                <div class="score-display" id="scoreDisplay"></div>
+                <div class="score-message" id="scoreMessage"></div>
+                <div class="encouragement" id="encouragement"></div>
+                <button class="btn" onclick="returnToMenu()">Tilbake til hovedmeny</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Letter data with questions
+        const letters = [
+            {
+                id: 1,
+                title: "Skogen",
+                image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80",
+                text: "Hei! I går bestemte vi oss for å gå en lang tur i skogen. Været var helt nydelig, himmelen var blå og solen varmet. Vi gikk på en liten sti mellom høye trær, og vi hørte mange fugler som sang. Etter en time fant vi et perfekt sted ved et stille vann. Der satte vi oss ned for å spise lunsj. Vi hadde smurt brødskiver med brunost og hadde varm kakao på termos. Plutselig så vi en stor elg som stod helt stille mellom trærne! Det var en utrolig spennende opplevelse.",
+                questions: [
+                    {
+                        type: "trueFalse",
+                        question: "De spiste pølser til lunsj.",
+                        correctAnswer: false,
+                        explanation: "De spiste brødskiver med brunost, ikke pølser."
+                    },
+                    {
+                        type: "synonym",
+                        question: "Hvilket ord betyr det samme som 'nydelig'?",
+                        targetWord: "nydelig",
+                        options: ["stygg", "vakker", "kjedelig", "vanskelig"],
+                        correctAnswer: 1,
+                        explanation: "'Nydelig' betyr det samme som 'vakker' - noe som er fint og pent."
+                    },
+                    {
+                        type: "multipleChoice",
+                        question: "Hvilket dyr så de i skogen?",
+                        options: ["En bjørn", "En elg", "En rev"],
+                        correctAnswer: 1,
+                        explanation: "Teksten sier at de så en stor elg som stod helt stille mellom trærne."
+                    },
+                    {
+                        type: "wordOrder",
+                        question: "Sett ordene i riktig rekkefølge for å lage en setning:",
+                        words: ["vann", "ved", "sted", "et", "perfekt", "vi", "fant"],
+                        correctOrder: [5, 3, 4, 2, 0, 1, 6], // "vi fant et perfekt sted ved vann"
+                        correctSentence: "vi fant et perfekt sted ved vann",
+                        explanation: "Riktig rekkefølge: 'vi fant et perfekt sted ved vann'"
+                    },
+                    {
+                        type: "synonymInText",
+                        question: "Klikk på ordet i teksten som betyr det samme som 'spennende'.",
+                        targetWord: "spennende",
+                        text: "Hei! I går bestemte vi oss for å gå en lang tur i skogen. Været var helt nydelig, himmelen var blå og solen varmet. Vi gikk på en liten sti mellom høye trær, og vi hørte mange fugler som sang. Etter en time fant vi et perfekt sted ved et stille vann. Der satte vi oss ned for å spise lunsj. Vi hadde smurt brødskiver med brunost og hadde varm kakao på termos. Plutselig så vi en stor elg som stod helt stille mellom trærne! Det var en utrolig spennende opplevelse.",
+                        correctWord: "utrolig",
+                        explanation: "'Utrolig' kan bety det samme som 'spennende' i denne sammenhengen - noe som er veldig interessant og imponerende."
+                    }
+                ]
+            },
+            {
+                id: 2,
+                title: "Byen",
+                image: "https://images.unsplash.com/photo-1513622470522-26c3c8a854bc?w=800&q=80",
+                text: "Kjære deg. Jeg har hatt en fantastisk helg i Oslo. Det er en veldig stor og travel by sammenlignet med hjemme. På lørdag tok jeg trikken til sentrum for å besøke det nye nasjonalmuseet. Det var veldig imponerende. Etterpå var jeg ganske sliten i beina. Da fant jeg en koselig kafé nær Karl Johan. Jeg bestilte en stor kopp kaffe og en fersk kanelbolle. Det var gøy å sitte der og se på alle de travle menneskene som gikk forbi utenfor vinduet. Jeg gleder meg til å fortelle mer når jeg kommer hjem.",
+                questions: [
+                    {
+                        type: "trueFalse",
+                        question: "Personen tok bussen til sentrum.",
+                        correctAnswer: false,
+                        explanation: "Personen tok trikken til sentrum, ikke bussen."
+                    },
+                    {
+                        type: "synonym",
+                        question: "Hvilket ord betyr det samme som 'imponerende'?",
+                        targetWord: "imponerende",
+                        options: ["kjedelig", "fantastisk", "vanskelig", "dårlig"],
+                        correctAnswer: 1,
+                        explanation: "'Imponerende' betyr det samme som 'fantastisk' - noe som er veldig bra og gjør inntrykk."
+                    },
+                    {
+                        type: "multipleChoice",
+                        question: "Hva bestilte personen på kaféen?",
+                        options: ["Kaffe og kanelbolle", "Te og kake", "Brus og smørbrød"],
+                        correctAnswer: 0,
+                        explanation: "Personen bestilte en stor kopp kaffe og en fersk kanelbolle."
+                    },
+                    {
+                        type: "wordOrder",
+                        question: "Sett ordene i riktig rekkefølge for å lage en setning:",
+                        words: ["kafé", "en", "fant", "jeg", "koselig", "nær", "Karl Johan"],
+                        correctOrder: [3, 1, 4, 2, 0, 5, 6], // "jeg fant en koselig kafé nær Karl Johan"
+                        correctSentence: "jeg fant en koselig kafé nær Karl Johan",
+                        explanation: "Riktig rekkefølge: 'jeg fant en koselig kafé nær Karl Johan'"
+                    },
+                    {
+                        type: "synonymInText",
+                        question: "Klikk på ordet i teksten som betyr det samme som 'travel'.",
+                        targetWord: "travel",
+                        text: "Kjære deg. Jeg har hatt en fantastisk helg i Oslo. Det er en veldig stor og travel by sammenlignet med hjemme. På lørdag tok jeg trikken til sentrum for å besøke det nye nasjonalmuseet. Det var veldig imponerende. Etterpå var jeg ganske sliten i beina. Da fant jeg en koselig kafé nær Karl Johan. Jeg bestilte en stor kopp kaffe og en fersk kanelbolle. Det var gøy å sitte der og se på alle de travle menneskene som gikk forbi utenfor vinduet. Jeg gleder meg til å fortelle mer når jeg kommer hjem.",
+                        correctWord: "travle",
+                        explanation: "'Travle' er flertall av 'travel' og betyr det samme - mye å gjøre, ikke rolig."
+                    }
+                ]
+            },
+            {
+                id: 3,
+                title: "Fjellet",
+                image: "https://images.unsplash.com/photo-1485550409059-9afb054cada4?w=800&q=80",
+                text: "Hei fra fjellet! Nå koser vi oss virkelig på hytta. Det er vinterferie her oppe, og landskapet er helt dekket av hvit snø. Hver morgen står vi opp tidlig for å gå på ski. Det er så stille og rolig i naturen, langt borte fra byens bråk. Selv om det er kaldt, omtrent ti minusgrader, fryser vi ikke. Vi har på oss ullundertøy, tykke gensere, lue og votter. Om kvelden tenner vi i peisen, spiller brettspill og drikker te. I kveld håper vi å se nordlyset på himmelen.",
+                questions: [
+                    {
+                        type: "trueFalse",
+                        question: "Det var omtrent ti plussgrader.",
+                        correctAnswer: false,
+                        explanation: "Det var omtrent ti minusgrader, ikke plussgrader."
+                    },
+                    {
+                        type: "synonym",
+                        question: "Hvilket ord betyr det samme som 'rolig'?",
+                        targetWord: "rolig",
+                        options: ["støyende", "stille", "travel", "rask"],
+                        correctAnswer: 1,
+                        explanation: "'Rolig' betyr det samme som 'stille' - uten bråk og støy."
+                    },
+                    {
+                        type: "multipleChoice",
+                        question: "Hva gjør de om kvelden?",
+                        options: ["Ser på TV", "Tenner i peisen og spiller brettspill", "Går på ski"],
+                        correctAnswer: 1,
+                        explanation: "Om kvelden tenner de i peisen, spiller brettspill og drikker te."
+                    },
+                    {
+                        type: "wordOrder",
+                        question: "Sett ordene i riktig rekkefølge for å lage en setning:",
+                        words: ["peisen", "i", "tenner", "vi", "om", "kvelden"],
+                        correctOrder: [4, 5, 3, 2, 1, 0], // "om kvelden tenner vi i peisen"
+                        correctSentence: "om kvelden tenner vi i peisen",
+                        explanation: "Riktig rekkefølge: 'om kvelden tenner vi i peisen'"
+                    },
+                    {
+                        type: "synonymInText",
+                        question: "Klikk på ordet i teksten som betyr det samme som 'kaldt'.",
+                        targetWord: "kaldt",
+                        text: "Hei fra fjellet! Nå koser vi oss virkelig på hytta. Det er vinterferie her oppe, og landskapet er helt dekket av hvit snø. Hver morgen står vi opp tidlig for å gå på ski. Det er så stille og rolig i naturen, langt borte fra byens bråk. Selv om det er kaldt, omtrent ti minusgrader, fryser vi ikke. Vi har på oss ullundertøy, tykke gensere, lue og votter. Om kvelden tenner vi i peisen, spiller brettspill og drikker te. I kveld håper vi å se nordlyset på himmelen.",
+                        correctWord: "minusgrader",
+                        explanation: "'Minusgrader' betyr kaldt vær - temperatur under null grader."
+                    }
+                ]
+            },
+            {
+                id: 4,
+                title: "Stranden",
+                image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80",
+                text: "Hallo! Vi må bare fortelle om gårsdagen. Vi kjørte til stranden tidlig om morgenen for å nyte finværet. Det var en helt perfekt sommerdag uten en sky på himmelen. Vannet i sjøen var overraskende varmt, så både voksne og barn badet mange ganger. Barna lekte lenge i den myke sanden og bygde et enormt slott med voldgrav. Mens barna lekte, leste jeg en god bok og solte meg. Før vi pakket sammen og reiste hjem, kjøpte vi hver vår store iskrem i kiosken. Det smakte nydelig i varmen.",
+                questions: [
+                    {
+                        type: "trueFalse",
+                        question: "Vannet var kaldt.",
+                        correctAnswer: false,
+                        explanation: "Vannet var overraskende varmt, så både voksne og barn badet mange ganger."
+                    },
+                    {
+                        type: "synonym",
+                        question: "Hvilket ord betyr det samme som 'perfekt'?",
+                        targetWord: "perfekt",
+                        options: ["dårlig", "ideell", "vanskelig", "kjedelig"],
+                        correctAnswer: 1,
+                        explanation: "'Perfekt' betyr det samme som 'ideell' - helt riktig og utmerket."
+                    },
+                    {
+                        type: "multipleChoice",
+                        question: "Hva bygde barna i sanden?",
+                        options: ["Et slott med voldgrav", "Et hus", "En bil"],
+                        correctAnswer: 0,
+                        explanation: "Barna bygde et enormt slott med voldgrav i sanden."
+                    },
+                    {
+                        type: "wordOrder",
+                        question: "Sett ordene i riktig rekkefølge for å lage en setning:",
+                        words: ["stranden", "til", "kjørte", "vi", "morgenen", "tidlig", "om"],
+                        correctOrder: [3, 2, 1, 0, 5, 6, 4], // "vi kjørte til stranden tidlig om morgenen"
+                        correctSentence: "vi kjørte til stranden tidlig om morgenen",
+                        explanation: "Riktig rekkefølge: 'vi kjørte til stranden tidlig om morgenen'"
+                    },
+                    {
+                        type: "synonymInText",
+                        question: "Klikk på ordet i teksten som betyr det samme som 'nydelig'.",
+                        targetWord: "nydelig",
+                        text: "Hallo! Vi må bare fortelle om gårsdagen. Vi kjørte til stranden tidlig om morgenen for å nyte finværet. Det var en helt perfekt sommerdag uten en sky på himmelen. Vannet i sjøen var overraskende varmt, så både voksne og barn badet mange ganger. Barna lekte lenge i den myke sanden og bygde et enormt slott med voldgrav. Mens barna lekte, leste jeg en god bok og solte meg. Før vi pakket sammen og reiste hjem, kjøpte vi hver vår store iskrem i kiosken. Det smakte nydelig i varmen.",
+                        correctWord: "perfekt",
+                        explanation: "'Perfekt' kan bety det samme som 'nydelig' i denne sammenhengen - noe som er veldig fint og bra."
+                    }
+                ]
+            }
+        ];
+
+        // User progress tracking
+        const userProgress = {
+            completed: [],
+            scores: {},
+            currentLetter: null,
+            currentQuestion: 0,
+            selectedAnswer: null,
+            answers: [],
+            wordOrder: []
+        };
+
+        // Typewriter timeout tracking
+        let typewriterTimeout = null;
+        let typewriterInterval = null;
+
+        // Initialize the app
+        function init() {
+            renderEnvelopes();
+        }
+
+        // Render envelope cards in mailbox
+        function renderEnvelopes() {
+            const mailbox = document.getElementById('envelopesInMailbox');
+            mailbox.innerHTML = '';
+
+            letters.forEach((letter, index) => {
+                const envelope = document.createElement('div');
+                envelope.className = `envelope-in-box ${userProgress.completed.includes(letter.id) ? 'completed' : ''}`;
+                envelope.style.animationDelay = `${index * 0.1}s`;
+                
+                envelope.innerHTML = `
+                    <div class="completion-badge">✔</div>
+                    <div class="envelope-paper">
+                        <div class="envelope-flap"></div>
+                        <div class="envelope-seal"></div>
+                        <div class="envelope-label">${letter.title}</div>
+                    </div>
+                `;
+
+                envelope.onclick = () => pickUpEnvelope(letter.id);
+                mailbox.appendChild(envelope);
+            });
+        }
+
+        // Pick up envelope animation
+        function pickUpEnvelope(letterId) {
+            const letter = letters.find(l => l.id === letterId);
+            if (!letter) return;
+
+            const envelopes = document.querySelectorAll('.envelope-in-box');
+            const targetEnvelope = Array.from(envelopes).find(env => {
+                const label = env.querySelector('.envelope-label');
+                return label && label.textContent === letter.title;
+            });
+
+            if (targetEnvelope) {
+                targetEnvelope.classList.add('picked-up');
+                
+                setTimeout(() => {
+                    showWritingAnimation(letter);
+                }, 600);
+            }
+        }
+
+        // Show writing hand animation
+        function showWritingAnimation(letter) {
+            const container = document.getElementById('writingHandContainer');
+            const text = document.getElementById('writingText');
+            
+            text.textContent = `Skriver brevet: ${letter.title}...`;
+            container.classList.add('active');
+
+            setTimeout(() => {
+                container.classList.remove('active');
+                openLetter(letter.id);
+            }, 2000);
+        }
+
+        // Typewriter effect for letter text
+        function typeWriter(element, text, speed = 30) {
+            // Clear any existing typewriter
+            if (typewriterInterval) {
+                clearInterval(typewriterInterval);
+            }
+            
+            element.textContent = '';
+            element.classList.add('typing');
+            let i = 0;
+            
+            function type() {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    typewriterTimeout = setTimeout(type, speed);
+                } else {
+                    element.classList.remove('typing');
+                    typewriterTimeout = null;
+                }
+            }
+            
+            type();
+        }
+
+        // Stop typewriter effect
+        function stopTypewriter() {
+            if (typewriterTimeout) {
+                clearTimeout(typewriterTimeout);
+                typewriterTimeout = null;
+            }
+            const letterTextElement = document.getElementById('letterText');
+            if (letterTextElement) {
+                letterTextElement.classList.remove('typing');
+            }
+        }
+
+        // Open letter modal
+        function openLetter(letterId) {
+            const letter = letters.find(l => l.id === letterId);
+            if (!letter) return;
+
+            userProgress.currentLetter = letterId;
+            userProgress.currentQuestion = 0;
+            userProgress.selectedAnswer = null;
+            userProgress.answers = [];
+            userProgress.wordOrder = [];
+
+            document.getElementById('letterImage').src = letter.image;
+            const letterTextElement = document.getElementById('letterText');
+            document.getElementById('letterModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Start typewriter effect after a short delay
+            setTimeout(() => {
+                typeWriter(letterTextElement, letter.text, 20);
+            }, 300);
+        }
+
+        // Close letter modal
+        function closeLetterModal() {
+            stopTypewriter();
+            document.getElementById('letterModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Start quiz
+        function startQuiz() {
+            stopTypewriter();
+            document.getElementById('letterModal').classList.remove('active');
+            document.getElementById('quizModal').style.display = 'flex';
+            document.getElementById('quizModal').classList.add('active');
+            showQuestion();
+        }
+
+        // Show current question
+        function showQuestion() {
+            const letter = letters.find(l => l.id === userProgress.currentLetter);
+            if (!letter) return;
+
+            const question = letter.questions[userProgress.currentQuestion];
+            if (!question) return;
+
+            // Update progress bar
+            const progress = ((userProgress.currentQuestion + 1) / letter.questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+
+            // Update question counter
+            document.getElementById('questionCounter').textContent = 
+                `Oppgave ${userProgress.currentQuestion + 1} av ${letter.questions.length}`;
+
+            // Update question text
+            document.getElementById('questionText').textContent = question.question;
+
+            // Clear previous state
+            userProgress.selectedAnswer = null;
+            userProgress.wordOrder = [];
+            document.getElementById('feedback').classList.remove('show', 'correct', 'incorrect');
+            document.getElementById('submitBtn').style.display = 'block';
+            document.getElementById('submitBtn').textContent = 'Svar';
+            document.getElementById('submitBtn').onclick = submitAnswer;
+
+            // Render question content based on type
+            const questionContent = document.getElementById('questionContent');
+            questionContent.innerHTML = '';
+
+            switch(question.type) {
+                case 'trueFalse':
+                    renderTrueFalse(question, questionContent);
+                    break;
+                case 'synonym':
+                    renderSynonym(question, questionContent);
+                    break;
+                case 'multipleChoice':
+                    renderMultipleChoice(question, questionContent);
+                    break;
+                case 'wordOrder':
+                    renderWordOrder(question, questionContent);
+                    break;
+                case 'synonymInText':
+                    renderSynonymInText(question, questionContent);
+                    break;
+            }
+        }
+
+        // Render True/False question
+        function renderTrueFalse(question, container) {
+            container.innerHTML = `
+                <div class="true-false-buttons">
+                    <button class="btn true-false-btn true" 
+                            data-hover-text="Klikk hvis påstanden er sann" 
+                            onclick="selectTrueFalse(true)">Sant</button>
+                    <button class="btn true-false-btn false" 
+                            data-hover-text="Klikk hvis påstanden er usann" 
+                            onclick="selectTrueFalse(false)">Usant</button>
+                </div>
+            `;
+        }
+
+        // Render Synonym question
+        function renderSynonym(question, container) {
+            container.innerHTML = `
+                <div class="synonym-question">
+                    <div class="word-to-match">Finn ordet som betyr det samme som: <strong>${question.targetWord}</strong></div>
+                    <div class="synonym-options">
+                        ${question.options.map((opt, index) => 
+                            `<div class="synonym-word" onclick="selectSynonym(${index})">${opt}</div>`
+                        ).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render Multiple Choice question
+        function renderMultipleChoice(question, container) {
+            container.innerHTML = `
+                <div class="answers-container">
+                    ${question.options.map((opt, index) => 
+                        `<div class="answer-option" onclick="selectAnswer(${index})">
+                            <input type="radio" name="answer" value="${index}" id="option${index}">
+                            <label for="option${index}">${opt}</label>
+                        </div>`
+                    ).join('')}
+                </div>
+            `;
+        }
+
+        // Render Word Order question
+        function renderWordOrder(question, container) {
+            container.innerHTML = `
+                <div class="word-order-container">
+                    <div class="word-order-instruction">Klikk på ordene i riktig rekkefølge for å bygge setningen:</div>
+                    <div class="word-bank" id="wordBank">
+                        ${question.words.map((word, index) => 
+                            `<div class="word-item" data-index="${index}" onclick="addWordToSentence(${index}, '${word}')">${word}</div>`
+                        ).join('')}
+                    </div>
+                    <div class="sentence-slot" id="sentenceSlot"></div>
+                </div>
+            `;
+        }
+
+        // Render Synonym in Text question
+        function renderSynonymInText(question, container) {
+            const words = question.text.split(/(\s+|[.,!?])/);
+            const highlightedText = words.map((word, index) => {
+                const cleanWord = word.trim().toLowerCase().replace(/[.,!?]/g, '');
+                if (cleanWord && cleanWord.length > 2) {
+                    return `<span class="highlight-word" data-word="${cleanWord}" onclick="selectWordInText('${cleanWord}')">${word}</span>`;
+                }
+                return word;
+            }).join('');
+
+            container.innerHTML = `
+                <div class="synonym-question">
+                    <div class="target-word">Finn ordet som betyr det samme som: <strong>${question.targetWord}</strong></div>
+                    <div class="text-with-highlights">${highlightedText}</div>
+                </div>
+            `;
+        }
+
+        // Select True/False
+        function selectTrueFalse(value) {
+            userProgress.selectedAnswer = value;
+            
+            document.querySelectorAll('.true-false-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            const btn = value 
+                ? document.querySelector('.true-false-btn.true')
+                : document.querySelector('.true-false-btn.false');
+            btn.classList.add('selected');
+        }
+
+        // Select Synonym
+        function selectSynonym(index) {
+            userProgress.selectedAnswer = index;
+            
+            document.querySelectorAll('.synonym-word').forEach((word, i) => {
+                word.classList.remove('selected');
+                if (i === index) {
+                    word.classList.add('selected');
+                }
+            });
+        }
+
+        // Select Answer (Multiple Choice)
+        function selectAnswer(index) {
+            userProgress.selectedAnswer = index;
+            
+            document.querySelectorAll('.answer-option').forEach((opt, i) => {
+                opt.classList.remove('selected');
+                if (i === index) {
+                    opt.classList.add('selected');
+                    opt.querySelector('input[type="radio"]').checked = true;
+                }
+            });
+        }
+
+        // Add word to sentence (Word Order)
+        function addWordToSentence(originalIndex, word) {
+            const wordItem = document.querySelector(`.word-item[data-index="${originalIndex}"]`);
+            if (wordItem.classList.contains('placed')) return;
+
+            userProgress.wordOrder.push({index: originalIndex, word: word});
+            
+            const sentenceSlot = document.getElementById('sentenceSlot');
+            const wordElement = document.createElement('div');
+            wordElement.className = 'word-item in-sentence';
+            wordElement.textContent = word;
+            wordElement.onclick = () => removeWordFromSentence(originalIndex, wordElement);
+            sentenceSlot.appendChild(wordElement);
+
+            wordItem.classList.add('placed');
+            wordItem.style.opacity = '0.5';
+            wordItem.style.cursor = 'not-allowed';
+        }
+
+        // Remove word from sentence
+        function removeWordFromSentence(originalIndex, element) {
+            element.remove();
+            userProgress.wordOrder = userProgress.wordOrder.filter(item => item.index !== originalIndex);
+            
+            const wordItem = document.querySelector(`.word-item[data-index="${originalIndex}"]`);
+            wordItem.classList.remove('placed');
+            wordItem.style.opacity = '1';
+            wordItem.style.cursor = 'move';
+        }
+
+        // Select word in text (Synonym in Text)
+        function selectWordInText(word) {
+            userProgress.selectedAnswer = word;
+            
+            document.querySelectorAll('.highlight-word').forEach(span => {
+                span.classList.remove('selected');
+                if (span.getAttribute('data-word') === word) {
+                    span.classList.add('selected');
+                }
+            });
+        }
+
+        // Submit answer
+        function submitAnswer() {
+            const letter = letters.find(l => l.id === userProgress.currentLetter);
+            const question = letter.questions[userProgress.currentQuestion];
+            let isCorrect = false;
+
+            if (question.type === 'trueFalse') {
+                isCorrect = userProgress.selectedAnswer === question.correctAnswer;
+            } else if (question.type === 'synonym' || question.type === 'multipleChoice') {
+                isCorrect = userProgress.selectedAnswer === question.correctAnswer;
+            } else if (question.type === 'wordOrder') {
+                const userSentence = userProgress.wordOrder.map(item => item.word).join(' ').toLowerCase();
+                isCorrect = userSentence === question.correctSentence;
+            } else if (question.type === 'synonymInText') {
+                isCorrect = userProgress.selectedAnswer === question.correctWord;
+            }
+
+            if (userProgress.selectedAnswer === null && question.type !== 'wordOrder') {
+                alert('Vennligst velg et svar først.');
+                return;
+            }
+
+            if (question.type === 'wordOrder' && userProgress.wordOrder.length === 0) {
+                alert('Vennligst plasser ordene i setningen.');
+                return;
+            }
+
+            // Store answer
+            userProgress.answers.push({
+                questionIndex: userProgress.currentQuestion,
+                answer: userProgress.selectedAnswer,
+                correct: isCorrect
+            });
+
+            // Show feedback
+            const feedback = document.getElementById('feedback');
+            feedback.className = `feedback show ${isCorrect ? 'correct' : 'incorrect'}`;
+            
+            const feedbackText = isCorrect 
+                ? 'Riktig! 🎉' 
+                : 'Ikke riktig.';
+            
+            feedback.innerHTML = `
+                <div class="feedback-text">${feedbackText}</div>
+                <div class="explanation">${question.explanation || ''}</div>
+            `;
+
+            // Highlight correct/incorrect answers
+            highlightAnswers(question, isCorrect);
+
+            // Update submit button
+            if (userProgress.currentQuestion < letter.questions.length - 1) {
+                document.getElementById('submitBtn').textContent = 'Neste';
+                document.getElementById('submitBtn').onclick = nextQuestion;
+            } else {
+                document.getElementById('submitBtn').textContent = 'Se resultat';
+                document.getElementById('submitBtn').onclick = completeQuiz;
+            }
+        }
+
+        // Highlight answers
+        function highlightAnswers(question, isCorrect) {
+            if (question.type === 'trueFalse') {
+                document.querySelectorAll('.true-false-btn').forEach(btn => {
+                    const isTrueBtn = btn.classList.contains('true');
+                    const isCorrectAnswer = question.correctAnswer === true;
+                    if ((isTrueBtn && isCorrectAnswer) || (!isTrueBtn && !isCorrectAnswer)) {
+                        btn.classList.add('correct');
+                    } else if (btn.classList.contains('selected')) {
+                        btn.classList.add('incorrect');
+                    }
+                });
+            } else if (question.type === 'synonym') {
+                document.querySelectorAll('.synonym-word').forEach((word, i) => {
+                    if (i === question.correctAnswer) {
+                        word.classList.add('correct');
+                    } else if (word.classList.contains('selected')) {
+                        word.classList.add('incorrect');
+                    }
+                });
+            } else if (question.type === 'multipleChoice') {
+                document.querySelectorAll('.answer-option').forEach((opt, i) => {
+                    if (i === question.correctAnswer) {
+                        opt.classList.add('correct');
+                    } else if (i === userProgress.selectedAnswer && !isCorrect) {
+                        opt.classList.add('incorrect');
+                    }
+                });
+            } else if (question.type === 'synonymInText') {
+                document.querySelectorAll('.highlight-word').forEach(span => {
+                    const word = span.getAttribute('data-word');
+                    if (word === question.correctWord) {
+                        span.classList.add('correct');
+                    } else if (span.classList.contains('selected')) {
+                        span.classList.add('incorrect');
+                    }
+                });
+            }
+        }
+
+        // Next question
+        function nextQuestion() {
+            userProgress.currentQuestion++;
+            showQuestion();
+        }
+
+        // Complete quiz
+        function completeQuiz() {
+            const letter = letters.find(l => l.id === userProgress.currentLetter);
+            const correctCount = userProgress.answers.filter(a => a.correct).length;
+            const totalQuestions = letter.questions.length;
+            const score = correctCount;
+
+            // Update progress
+            if (!userProgress.completed.includes(userProgress.currentLetter)) {
+                userProgress.completed.push(userProgress.currentLetter);
+            }
+            userProgress.scores[userProgress.currentLetter] = score;
+
+            // Show completion summary
+            showCompletionSummary(score, totalQuestions);
+        }
+
+        // Show completion summary
+        function showCompletionSummary(score, total) {
+            document.getElementById('quizModal').style.display = 'none';
+            document.getElementById('completionModal').classList.add('active');
+
+            document.getElementById('scoreDisplay').textContent = `${score} av ${total} riktig!`;
+            
+            const percentage = (score / total) * 100;
+            let message = '';
+            let encouragement = '';
+
+            if (percentage === 100) {
+                message = 'Perfekt! Du fikk alle riktig!';
+                encouragement = 'Utmerket arbeid! 🎉';
+            } else if (percentage >= 80) {
+                message = 'Veldig bra!';
+                encouragement = 'Du er på rett vei! 👍';
+            } else if (percentage >= 60) {
+                message = 'Bra forsøk!';
+                encouragement = 'Fortsett å øve! 💪';
+            } else {
+                message = 'Ikke glem å lese brevet igjen!';
+                encouragement = 'Prøv igjen - du klarer det! 🌟';
+            }
+
+            document.getElementById('scoreMessage').textContent = message;
+            document.getElementById('encouragement').textContent = encouragement;
+        }
+
+        // Return to main menu
+        function returnToMenu() {
+            document.getElementById('letterModal').classList.remove('active');
+            document.getElementById('quizModal').style.display = 'none';
+            document.getElementById('quizModal').classList.remove('active');
+            document.getElementById('completionModal').classList.remove('active');
+            document.getElementById('writingHandContainer').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            
+            // Reset quiz state
+            userProgress.currentLetter = null;
+            userProgress.currentQuestion = 0;
+            userProgress.selectedAnswer = null;
+            userProgress.answers = [];
+            userProgress.wordOrder = [];
+
+            // Update envelopes
+            renderEnvelopes();
+        }
+
+        // Close modal on backdrop click
+        document.getElementById('letterModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLetterModal();
+            }
+        });
+
+        document.getElementById('quizModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                returnToMenu();
+            }
+        });
+
+        document.getElementById('completionModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                returnToMenu();
+            }
+        });
+
+        // Initialize on load
+        init();
+    </script>
+</body>
+</html>
